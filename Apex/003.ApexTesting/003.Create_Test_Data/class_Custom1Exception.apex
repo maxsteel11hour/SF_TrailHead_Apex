@@ -1,0 +1,1 @@
+public class Custom1Exception extends Exception{}//This will be enhanced in future//The name needs to ensure it has suffix with Exception
