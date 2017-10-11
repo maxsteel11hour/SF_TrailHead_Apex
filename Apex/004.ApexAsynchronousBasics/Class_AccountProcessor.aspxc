@@ -1,0 +1,54 @@
+public class AccountProcessor {
+    @Future
+    public static void countContacts(List<ID> sID){
+		//Concern1: is Id list more than 200
+		//Concern2: 	
+		Integer i = 0;
+			
+		If (sID != null)
+		{			
+			System.Debug('ID Size ='+sID.size());
+			
+			Map<Id,Integer> sCon       = new Map<Id,Integer>();
+			List<Account> sAcc = new List<Account>();	
+            
+            String[] sID_temp = (String[])sId;
+            System.Debug([Select AccountId,count(Id) count_c 
+                                     from Contact Where AccountId IN :sID_temp Group by AccountId]);
+			//Defect: when a query has :ID and you pass List<ID>, it does not work!
+			for (AggregateResult x :[Select AccountId,count(Id) count_c 
+                                     from Contact Where AccountId IN :sID Group by AccountId]){
+                     System.Debug('Aggregate Result');
+					 sCon.put((ID)x.get('AccountId'), (Integer)x.get('count_c'));
+					 i += 1;
+					 System.Debug('AggregateResult['+i+']');
+				 }
+            System.Debug('Key Size ='+sCon.size());
+			for (Account y : [Select Id,Number_of_Contacts__c from Account where ID IN :sID]){
+					 
+				System.Debug('Account update');
+                y.Number_of_Contacts__c = sCon.get(y.Id);
+				sAcc.Add(y);
+			}
+			System.Debug('Account Size ='+sAcc.size());
+
+			if (sAcc.size() > 0){
+				List<Database.SaveResult> sResult = new List<Database.SaveResult>();
+				sResult = Database.update(sAcc, false);
+                
+                System.Debug('Account Size ='+sAcc.size());
+				
+				for (Database.SaveResult z : sResult){
+					if (! z.isSuccess()){
+						System.Debug('UpdateAccount Error:: Id['+z.Id+'] = '+z.getErrors());     
+					}
+				}
+                System.Debug('Account Update Result check Complete');
+			}
+			else
+				System.Debug('Accounts Not Found to insert');
+		}
+
+	
+    }
+}

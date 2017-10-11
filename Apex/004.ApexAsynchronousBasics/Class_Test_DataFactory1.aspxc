@@ -1,0 +1,40 @@
+@isTest
+public class Test_DataFactory1 {
+
+    public static void InsertRecords(String sObj,Integer sCount){
+
+        List<SObject> Obj = new List<sObject>();
+        List<ID> sID = new List<ID>();
+        List<Contact> sConObj = new List<Contact>();
+        try{
+            if(sObj == 'Account'){ 
+                for(Integer i=0; i<sCount; i++){
+                    Obj.add(new Account(Name = 'TEST_'+i));
+                }                
+            }
+            else{
+                
+                Throw new Custom1Exception('ERROR:'+sObj+' Object Record creation failed!');
+            }
+            
+            
+            List<Database.SaveResult> sResult = new List<Database.SaveResult>();
+            sResult = Database.insert(Obj, false);
+            
+            for (Database.SaveResult x: sResult){
+                if(! x.isSuccess()){
+                    System.Debug('Write Failure at '+x.getId());
+                    System.Debug('Errors : '+x.getErrors());
+                } 
+                else{
+                    sConObj.add(new Contact(FirstName='FNAME_'+x.getID(), LastName='John', AccountId=x.getID()));                   
+                }
+            }
+            insert sConObj;
+        }
+        catch(Exception e){
+            ExceptionError.Errore(e, 'Test_DataFactory1', 'InsertRecords');
+        }
+    }
+
+}

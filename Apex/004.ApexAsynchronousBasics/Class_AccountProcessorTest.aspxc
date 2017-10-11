@@ -1,0 +1,60 @@
+@isTest
+private class AccountProcessorTest {
+   //additional care can be taken to check if there are any future jobs that run to update 
+   //Account records esp the Id in question.
+   //If so, why attempt update and cause errors.
+   //not sure if this can be done for now
+    @isTest public static void Test_1(){
+        System.AssertEquals(True,TestCount(2));
+    }
+    /*
+    @isTest public static void Test_2(){
+        System.AssertEquals(True,TestCount(1000));
+    } */
+    
+    
+    public static boolean TestCount(Integer sCount){
+		Test_DataFactory1.InsertRecords('Account',sCount);
+        System.Debug('TestCount ('+sCount+') Start');
+        List<ID> sID = new List<ID>(TestDataFactory(sCount));
+       
+        //------------------------------------------------------------
+        Test.StartTest();
+        	System.Debug('Invoke AccountProcessor Method - Start');
+        	AccountProcessor.countContacts(sID);
+        	System.Debug('Invoke AccountProcessor Method - Complete');
+        Test.StopTest();
+        //------------------------------------------------------------ 
+        //
+        
+        //Is there any easier way to query child count than run a query inside the loop
+		//Map<ID,Integer> sKey1 = new Map<ID,Integer>();
+        Boolean sFlag = True;
+		//Scenario Where the for loop scan returns zero record; return would be True
+        for(Account sAcn :[Select Id,Number_of_Contacts__c from Account Where Id IN :sID]){
+			String x = sAcn.ID;
+            Integer sCount1 = (Integer)([Select count() from Contact where AccountId = :x]);
+            
+            if (sAcn.Number_of_Contacts__c != sCount1){
+                sFlag = False;
+                System.Debug('Flag ['+sAcn.Id+'] = FALSE || '+sCount1+'||'+sAcn.Number_of_Contacts__c);
+            } 
+        }
+        
+		return sFlag;
+    }
+    
+    public static List<ID> TestDataFactory(Integer sCount){
+        //attempts to fetch sCount # of Account records to process
+		System.Debug('Test Id Count = '+sCount);
+        List<ID> sID = new List<ID>(); 
+        for (Account a:[Select Id from Account Limit :sCount]){
+            sID.add(a.ID);
+        }
+        System.Debug('Test Id Size = '+sID.size());
+        return sID;
+        //There is no guarantee that number of records returned should be sCount
+        //AccountProcessor.countContacts(sId);
+    }    
+    
+}

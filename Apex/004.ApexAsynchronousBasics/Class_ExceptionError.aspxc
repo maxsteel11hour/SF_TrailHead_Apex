@@ -1,0 +1,13 @@
+public class ExceptionError {
+    
+    public static void Errore(Exception e, String Classname, String sMethod){             
+        system.debug('Error::'+ClassName+'|'+sMethod+'():1/2::'+e.getMessage());
+        system.debug('Error::'+ClassName+'|'+sMethod+'():2/2::'+e.getLineNumber());
+        Throw new Custom1Exception('Error::'+ClassName+'|'+sMethod+'()'+e.getLineNumber()+' :: '+e);
+    }
+    public static void Error(String e, String Classname, String sMethod){             
+        system.debug('Error::'+ClassName+'|'+sMethod+'():: '+e);
+        Throw new Custom1Exception('Error::'+ClassName+'|'+sMethod+'():: '+e);
+    }    
+
+}

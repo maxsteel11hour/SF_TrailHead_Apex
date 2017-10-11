@@ -1,0 +1,1 @@
+public class Custom1Exception extends Exception{}
