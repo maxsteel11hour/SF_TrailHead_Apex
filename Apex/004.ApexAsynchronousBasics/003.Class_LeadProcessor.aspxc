@@ -1,5 +1,8 @@
 global class LeadProcessor Implements 
 		Database.Batchable<sObject>, Database.Stateful {
+//Invoke:
+//LeadProcessor myBatchObject = new LeadProcessor(); 
+//Id batchId = Database.executeBatch(myBatchObject,200);
             
     // instance member to retain state across transactions
     global Integer recordsProcessed = 0;
@@ -11,23 +14,23 @@ global class LeadProcessor Implements
             
     global void execute(Database.BatchableContext bc, List<Lead> sLead){
         // process each batch of records
-        
+		List<Lead> abc = new List<Lead>();
         for (Lead x: sLead){
             x.Description = 'Batch Update: LeadSource. Prev. Value = '+x.LeadSource;
             x.LeadSource  = 'DreamForce';
-            
+            abc.add(x);
             recordsProcessed += 1;
         }
         
         List<Database.SaveResult> sResult = new List<Database.SaveResult>();
         sResult = Database.Update(sLead, false);
-        
+        /*
         for (Database.SaveResult y: sResult){
             if (! y.isSuccess()){
                 System.Debug('UpdateAccount Error:: Id['+y.Id+'] = '+y.getErrors()); 
                 recordsUpdFailed += 1;
-            }
-        }
+            } 
+        } */
     }    
 
     global void finish(Database.BatchableContext bc){

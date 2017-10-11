@@ -1,0 +1,37 @@
+@isTest
+private class LeadProcessorTest {
+
+    @isTest
+    public static void LP_Test1(){
+    	Integer sCount = LP_BatchInvoke(200,200); 
+        System.assertEquals(200, sCount);
+    }
+    private static Integer LP_BatchInvoke(Integer sCount, Integer sCount1){
+		
+		LP_InsertLeads(sCount1);
+        
+        test.startTest();
+            LeadProcessor sObj1 = new LeadProcessor();
+            Id batchId1         = Database.ExecuteBatch(sObj1, sCount);
+        test.stopTest();
+        
+        System.Debug(System.now()+' :: Batch ['+batchId1+'] Complete');
+        System.Debug('Batch ['+batchId1+'] Records Processed ='+sObj1.recordsProcessed);
+        System.Debug('Batch ['+batchId1+'] Records Failed    ='+sObj1.recordsUpdFailed);
+        
+        System.AssertEquals(0,sObj1.recordsUpdFailed);
+        
+        List<Lead> sLd2 = new List<Lead>([Select Id from Lead where LeadSource='DreamForce']);
+        return(sLd2.size());
+    }
+    
+    private static void LP_InsertLeads(Integer sCount){
+        List<Lead> sLd1 = new List<Lead>();
+        for(Integer i=0; i<sCount; i++){
+            sLd1.add(new Lead(FirstName='FN_'+i, LastName='LN_'+i, Company='D-Company'));
+        }
+        System.Debug('Test Lead List size = '+ sLd1.size());
+        System.Debug('Test Lead List      = '+ sLd1);
+        Insert sLd1;
+    }
+}
