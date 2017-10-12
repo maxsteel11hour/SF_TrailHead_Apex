@@ -1,0 +1,32 @@
+public class AddPrimaryContact implements Queueable {
+
+    private Contact sContact;
+    private String BillingState;
+    
+    public AddPrimaryContact(Contact sCon, String stateAbv){
+        this.sContact      = sCon;
+        this.BillingState  = stateAbv;
+        System.Debug('Constructor - Complete!');
+    }
+    public void execute(QueueableContext QCon){
+        //query for a maximum of 200 Accounts with the BillingState specified by the State abbreviation 
+        //
+        List<Contact> sConObj = new List<Contact>(); 
+        for (Account x: [Select Id from Account where BillingState =:BillingState Limit 200]){
+            Contact sClone   = sContact.clone(false,false,false,false);
+
+            sClone.AccountId = x.Id;
+            sConObj.add(sClone);
+            System.Debug('Contact Clone ['+sConObj.size()+'] - Complete!');
+        }
+        
+        if(sConObj.size() > 0){
+            Insert sConObj;
+            System.Debug('Contact Insert - Complete!');            
+        }
+        else{
+            System.Debug('Contact Insert - No Records Found!');
+        }
+    }
+        
+}

@@ -1,0 +1,50 @@
+@isTest
+private class AddPrimaryContactTest {
+
+    @isTest
+    public static void Test_1(){
+    	DataFactory(50,'NY');
+    	DataFactory(50,'CA'); 
+		ConductTest('CA');
+    }
+    
+    private static void DataFactory(Integer sCount, String sState){
+        //Create sCount # of Accounts with sState as BillingState
+        List<Account> sAcnObj = new List<Account>();
+        for (Integer i = 0; i<sCount; i++){
+            sAcnObj.add(new Account(Name='Test_'+i, BillingState=sState));
+        }
+        Insert sAcnObj;
+    }
+    
+    private static void ConductTest(String sState){
+
+        List<Account> sAcnObj = new List<Account>(
+            [Select Id, (Select Id From Contacts) from Account Where BillingState =:sState]);  
+        Integer sPreCount0 = sAcnObj.size();
+        System.Debug(sState+' BillingState Accounts with Contact Associated ='+sPreCount0);
+        sAcnObj            = [Select Id from Account Where BillingState =:sState];
+        Integer sPreCount1 = sAcnObj.size();
+        System.Debug(sState+' BillingState Accounts pre-Contact Associated ='+(sPreCount1));
+
+
+		Contact sConObj = new Contact(FirstName='AddPrimary', LastName='Contact');  
+        Insert sConObj;
+        System.Debug('Contact Inserted');
+        
+        //Here our main Class does not take into consideration existing Accounts of CA that have Contact+
+        AddPrimaryContact sObj = new AddPrimaryContact(sConObj, sState);
+        System.Debug('Class Object Created');
+        
+        Test.StartTest();  
+			//Id sId = 
+            System.enqueueJob(sObj);
+        Test.StopTest();
+        	System.Debug('Queue Apex Job Complete');
+        
+        sAcnObj = ([Select Id, (Select Id From Contacts) from Account Where BillingState =:sState]);
+        
+        System.AssertEquals(sPreCount1,sAcnObj.size(), 'Test for '+sState+
+                            ' BillingCode Accounts associated to clone contact has failed!');
+    }
+}
