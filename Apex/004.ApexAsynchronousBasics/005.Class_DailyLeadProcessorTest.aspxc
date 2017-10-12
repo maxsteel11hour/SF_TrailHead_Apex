@@ -1,0 +1,61 @@
+@isTest
+private class DailyLeadProcessorTest {
+    // Seconds Minutes Hours Day_of_month Month Day_of_week optional_year
+    public static String CRON_EXP = '0 0 0 * 10 ? 2017';
+    
+    @isTest 
+    static void Test1(){
+		//Data Insert ---------------------------
+        List<Lead> sLeadObj = new List<Lead>();
+        For(Integer i=0; i<200; I++){
+            sLeadObj.add(new Lead(FirstName='FN_'+i, LastName='LN_'+i, Company='D-Company'));
+        }        
+        System.Debug('Lead Data Ini.Size = '+sLeadObj.size());
+        Insert sLeadObj;
+		//Data Insert ---------------------------        
+
+		//Pre Query   ---------------------------         
+        String sQuery = 'Select ID From Lead Where LeadSource = NULL';
+        sLeadObj      = Database.query(sQuery);
+        System.Debug('Target Leads    = '+sLeadObj.size());
+
+        sQuery        = 'Select ID From Lead Where LeadSource = \'DreamForce\'';
+        sLeadObj      = Database.query(sQuery);
+        System.Debug('DreamForce Leads = '+sLeadObj.size());
+		//Pre Query   --------------------------- 
+		//        
+        Test.startTest();
+        System.Debug('Test_start');
+        String jobId = System.schedule('ScheduledApexTest1',
+                                       CRON_EXP, 
+                                       new DailyLeadProcessor());         
+        // Verify the scheduled job has not run yet.
+		//Pre Query   ---------------------------         
+            sQuery        = 'Select ID From Lead Where LeadSource = NULL';
+            sLeadObj      = Database.query(sQuery);
+            System.Debug('Target Leads    = '+sLeadObj.size());
+        System.assertEquals(200, sLeadObj.size(), 'Leads Don\'t exist before job has run');
+        
+            sQuery        = 'Select ID From Lead Where LeadSource = \'DreamForce\'';
+            sLeadObj      = Database.query(sQuery);
+            System.Debug('DreamForce Leads = '+sLeadObj.size());
+        System.assertEquals(0, sLeadObj.size(), 'DF Leads exist before job has run');
+		//Pre Query   --------------------------- 
+
+        // Stopping the test will run the job synchronously
+        System.Debug('Test_stop - Asynch');
+        Test.stopTest();
+        
+		//Post Query   ---------------------------         
+            sQuery        = 'Select ID From Lead Where LeadSource = NULL';
+            sLeadObj      = Database.query(sQuery);
+            System.Debug('Target Leads    = '+sLeadObj.size());
+        System.assertEquals(0, sLeadObj.size(), 'Blank Leads Don\'t exist after job has run');
+        
+            sQuery        = 'Select ID From Lead Where LeadSource = \'DreamForce\'';
+            sLeadObj      = Database.query(sQuery);
+            System.Debug('DreamForce Leads = '+sLeadObj.size());
+        System.assertEquals(200, sLeadObj.size(), 'DF Leads confirm job has run');
+		//Pre Query   ---------------------------         
+    }
+}

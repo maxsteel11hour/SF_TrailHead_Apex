@@ -1,0 +1,13 @@
+global class DailyLeadProcessor Implements Schedulable {
+    global void execute(SchedulableContext ctx) {
+
+        List<Lead> sLeadObj = new List<Lead>();
+        For (Lead x: [Select Id,LeadSource from Lead Where LeadSource = NULL LIMIT 200]){
+            x.Description= 'DailyLeadProcessor Async Update. Earlier LeadSource Value ='+x.LeadSource;
+            x.LeadSource = 'DreamForce';
+            sLeadObj.add(x);
+        }
+        System.Debug('Lead Queried Size = '+sLeadObj.size());
+    }
+}
+
