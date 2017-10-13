@@ -1,0 +1,35 @@
+@isTest
+private class AnimalLocatorTest {
+
+    //Status Code: Fail    
+    @isTest static void AnimalTest1(){
+/*
+        StaticResourceCalloutMock mock = new StaticResourceCalloutMock();
+
+        	mock.setStaticResource('GetAnimalLocator1');
+            mock.setStatusCode(201);
+            mock.setHeader('Content-Type', 'application/json;charset=UTF-8');
+*/
+        Test.setMock(HttpCalloutMock.class, new AnimalLocatorMock());
+		
+        System.Debug('Mock Invoke Define Complete');
+        
+        System.AssertEquals('bear1',AnimalLocator.getAnimalNameById(2));
+    }
+	
+    //Status Code: Pass
+    @isTest static void AnimalTest2(){
+/*        
+        StaticResourceCalloutMock mock = new StaticResourceCalloutMock();
+            mock.setStaticResource('GetAnimalLocator1');
+            mock.setStatusCode(200);
+            mock.setHeader('Content-Type', 'application/json;charset=UTF-8');
+			Test.setMock(HttpCalloutMock.class, mock);
+*/
+        Test.setMock(HttpCalloutMock.class, new AnimalLocatorMock());
+		
+        System.Debug('Mock Invoke Define Complete');
+        
+        System.AssertEquals('bear',AnimalLocator.getAnimalNameById(2));
+    }
+}

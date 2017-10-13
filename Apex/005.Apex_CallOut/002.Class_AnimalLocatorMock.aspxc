@@ -1,0 +1,17 @@
+/*
+ * To test your POST callout, we provide an implementation of the HttpCalloutMock interface. 
+ * This interface enables you to specify the response that’s sent in the respond method
+*/
+
+@isTest
+global class AnimalLocatorMock implements HttpCalloutMock {
+    // Implement this interface method
+    global HTTPResponse respond(HTTPRequest request) {
+        // Create a fake response
+        HttpResponse response = new HttpResponse();
+        response.setHeader('Content-Type', 'application/json');
+        response.setBody('{"animal":{"id":3,"name":"bear1","eats":"berries, campers, adam seligman","says":"yum yum"}}');
+        response.setStatusCode(200);
+        return response; 
+    }
+}

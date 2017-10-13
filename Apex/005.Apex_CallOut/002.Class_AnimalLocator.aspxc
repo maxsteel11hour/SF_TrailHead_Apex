@@ -1,0 +1,80 @@
+public class AnimalLocator {
+
+    public static String getAnimalNameById(Integer sID){
+        				
+        Http http           = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint('https://th-apex-http-callout.herokuapp.com/animals/'+sID);
+        request.setMethod('GET');
+        
+        HttpResponse response = http.send(request);
+            //System.Debug('Response Body ='+response.getHeader(key);
+            System.Debug('Response Status ='+response.getStatusCode());
+            System.Debug('Response Body   ='+response.getBody());
+		String sResponse	= (string)'';
+        
+        if(response.getStatusCode() == 200){
+            //Gets Level 1
+            Map<String, Object> res_lev1 = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+            System.Debug(res_lev1);
+            
+            Map<String, Object> res_lev2 = (Map<String, Object>) res_lev1.get('animal');
+            System.Debug(res_lev2.get('name'));  
+            
+            sResponse = (string) res_lev2.get('name');
+        }
+
+        
+        return (sResponse);       
+    }
+}    
+
+/* JSON Parse
+    public static String xx(Integer sID){
+        Http http           = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint('https://th-apex-http-callout.herokuapp.com/animals/'+sID);
+        request.setMethod('GET');
+        
+        HttpResponse response = http.send(request);
+            //System.Debug('Response Body ='+response.getHeader(key);
+            System.Debug('Response Status ='+response.getStatusCode());
+            System.Debug('Response Body   ='+response.getBody());
+        
+		JSONParser parser = JSON.createParser(response.getBody());
+        //Map<String,String> sAnimals = new Map<String,String>();
+        List<String> sAnimals = new List<String>();
+        
+        While (parser.nextToken() != null){
+            //checks for multiple instance of the Name Field
+            if (parser.getCurrentName() == 'Name' && 
+                parser.getCurrentToken() == JSONToken.FIELD_NAME){
+                parser.nextToken(); //next token is the field value for name
+                //sAnimals.put(??*??,parser.getText());
+                sAnimals.add(parser.getText());
+            } 
+        }
+        
+        return ((String) sAnimals[0]);       
+    }
+*/
+
+/*
+ * 
+
+    {"animal":{"id":1,"name":"chicken","eats":"chicken food","says":"cluck cluck"}}
+    JSONParser parser = JSON.createParser(response.getBody());
+    while (parser.nextToken() != null) {
+    if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
+    
+    parser.nextToken();
+    System.debug('CurrentName='+parser.getCurrentName());
+    System.debug('GetText='+parser.gettext());
+    System.Debug('---------------------------------');                
+    }
+    
+    }
+
+
+ * 
+ */

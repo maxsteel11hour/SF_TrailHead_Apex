@@ -1,0 +1,61 @@
+public class Sample_JSONParse_1 {
+
+    public void Jason_sample1(){
+        
+
+
+        Http http = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint('https://th-apex-http-callout.herokuapp.com/animals/1');
+        request.setMethod('GET');
+        HttpResponse response = http.send(request);
+        // If the request is successful, parse the JSON response.
+			//System.Debug(response.getBody());
+/*
+        Map<String, Object> results = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+			//System.Debug(results);
+
+            Map<String, Object> results1 = (Map<String, Object>) results.get('animal');
+			//System.Debug(results1.get('name'));
+*/
+//{"animal":{"id":1,"name":"chicken","eats":"chicken food","says":"cluck cluck"}}
+		JSONParser parser = JSON.createParser(response.getBody());
+					System.Debug(response.getBody());
+					System.Debug('---------------------------------');
+					System.debug('CurrentName='+parser.getCurrentName());
+                    System.debug('GetText    ='+parser.gettext());
+                	System.Debug('CurrToken  ='+parser.getCurrentToken());
+					System.Debug('---------------------------------');
+
+		while (parser.nextToken() != null) {
+            //if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
+                    /*if (parser.getText() == JSONToken.VALUE_TRUE){
+                     	System.Debug('HELLO!!');   
+                    } */                   
+					System.debug('CurrentName='+parser.getCurrentName());
+                    System.debug('GetText    ='+parser.gettext());
+                	System.Debug('CurrToken  ='+parser.getCurrentToken());
+                	/*
+                	System.debug('END_ARRAY='+JSONToken.END_ARRAY);
+                	System.debug('END_OBJECT'+JSONToken.END_OBJECT);
+                	System.debug('FIELD_NAME'+JSONToken.FIELD_NAME);
+                	System.debug('NOT_AVAILABLE'+JSONToken.NOT_AVAILABLE);
+                	System.debug('START_ARRAY'+JSONToken.START_ARRAY);
+                	System.debug('START_OBJECT'+JSONToken.START_OBJECT);
+                	System.debug('VALUE_EMBEDDED_OBJECT'+JSONToken.VALUE_EMBEDDED_OBJECT);
+                	System.debug('VALUE_NUMBER_FLOAT'+JSONToken.VALUE_NUMBER_FLOAT);
+                	System.debug('VALUE_NUMBER_INT'+JSONToken.VALUE_NUMBER_INT);
+                	System.debug('VALUE_STRING'+JSONToken.VALUE_STRING);
+                	System.debug('VALUE_TRUE'+JSONToken.VALUE_TRUE);
+					*/
+					System.Debug('---------------------------------'); 
+            		//parser.NextToken();
+            //}
+        }
+					System.debug('CurrentName='+parser.getCurrentName());
+                    System.debug('GetText    ='+parser.gettext());
+                	System.Debug('CurrToken  ='+parser.getCurrentToken());
+					System.Debug('---------------------------------');		
+  
+    }
+}
