@@ -1,0 +1,11 @@
+public class ParkLocator {
+
+    public static List<String> country (String Country){
+        
+        //List<String> sString = new List<String>();
+        
+        ParkService.ParksImplPort sParkObj = new ParkService.ParksImplPort();
+        return (sParkObj.byCountry(Country) );
+        //return sString;
+    }
+}
