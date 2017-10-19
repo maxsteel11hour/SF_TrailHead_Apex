@@ -1,0 +1,35 @@
+@isTest
+private class AccountManagerTest {
+    @isTest 
+    static void testGetCaseById() {
+        Id sId = createTestRecord(2);	//return Account Id
+
+        RestRequest request = new RestRequest();
+        request.requestUri = 'https://eu11.salesforce.com/services/apexrest/Accounts/'+sId+'/contacts';
+        request.httpMethod = 'GET';
+        RestContext.request = request;
+
+        Account sObj2 = AccountManager.getAccount();
+        // Verify results
+        System.assert(sObj2 != null);
+        System.assertEquals(sId, sObj2.Id);
+
+    }
+    
+    static public ID createTestRecord(Integer sCount){
+        
+        ID sId;
+        Account sAc1 = new Account(Name = 'Test Record 1.1');
+        Insert sAc1;
+        sId = sAc1.Id;
+        
+        List <Contact> sCon = new List<Contact>();
+        For (Integer i = 0; i<sCount; i++){
+            sCon.add(new Contact(FirstName = 'Test'+i, LastName = 'Freud', AccountId = sId));
+            	System.Debug('Test - Contact['+i+'] record add.');
+        }
+        Insert sCon;
+        
+        return sId;
+    }
+}

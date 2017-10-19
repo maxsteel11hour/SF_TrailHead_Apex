@@ -1,0 +1,86 @@
+@RestResource(urlMapping='/Accounts/*/contacts2')
+global with sharing class AccountManager1 {
+
+    @HttpGet
+    global static cust_AcnCon1 getAccount() {
+        //Option1 - 2 queries and minimal processing
+        RestRequest request = RestContext.request;
+        String sID          = request.requestURI.substringBetween('Accounts/','/contacts');
+        cust_AcnCon1 sObj1  = new cust_AcnCon1();
+        Map<Id,Account> sM1 = new Map<Id,Account>([Select Id, Name from Account where Id= :sID ]);
+        
+        String sString1 = 'Incorrect Id';
+        If (sM1.size() == 0){
+        	System.Debug('No Records Retrieved for the Id:'+ sID);
+        }
+        else if (sM1.Size() > 1){
+        	System.Debug('Multiple Records Retrieved for the Id:'+sId);            
+        }
+        else if (sM1.size() == 1){
+        	System.Debug('Account Id:'+ sID);            
+        }
+        //why Map? Just for fun
+        sObj1.AccountId   = sM1.get(sID).Id;
+        sObj1.AccountName = sM1.get(sID).Name;
+        sObj1.ChildCon    = new List<Contact>([Select Id, Name from Contact where AccountId = :sID]);
+        sObj1.sTest1      = True;
+        return sObj1;
+        
+        //can think of an
+        //	Aggregate Result
+        //	Object - need to check
+        //	List/Array
+    } 
+    
+    global class cust_AcnCon1{
+            
+		Global String AccountId=null;
+        Global String AccountName=null;
+        Global List<Contact> ChildCon=null;
+        Global Boolean sTest1 = False;
+    }
+}
+
+
+
+
+/*
+ * 
+ * 
+Raw Response
+HTTP/1.1 200 OK
+Date: Tue, 17 Oct 2017 15:39:42 GMT
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Content-Security-Policy: upgrade-insecure-requests 
+Cache-Control: no-cache,must-revalidate,max-age=0,no-store,private
+Set-Cookie: BrowserId=XfPxgi4yQRmQ6vyHNGNomQ;Path=/;Domain=.salesforce.com;Expires=Sat, 16-Dec-2017 15:39:42 GMT;Max-Age=5184000
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Content-Type: application/json;charset=UTF-8
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Transfer-Encoding: chunked
+
+
+{
+  "ChildCon" : [ {
+    "attributes" : {
+      "type" : "Contact",
+      "url" : "/services/data/v41.0/sobjects/Contact/0030Y00000fVP5SQAW"
+    },
+    "Id" : "0030Y00000fVP5SQAW",
+    "Name" : "123 123"
+  }, {
+    "attributes" : {
+      "type" : "Contact",
+      "url" : "/services/data/v41.0/sobjects/Contact/0030Y00000fVP5XQAW"
+    },
+    "Id" : "0030Y00000fVP5XQAW",
+    "Name" : "234 234"
+  } ],
+  "AccountName" : "Apples & Oranges",
+  "AccountId" : "0010Y00000n5PInQAM"
+}
+ * 
+ */

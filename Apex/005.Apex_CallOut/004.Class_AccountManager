@@ -1,0 +1,16 @@
+@RestResource(urlMapping='/Accounts/*/contacts')
+global with sharing class AccountManager {
+
+    @HttpGet
+    global static Account getAccount() {
+        RestRequest request = RestContext.request;
+        String sID          = request.requestURI.substringBetween('Accounts/','/contacts');
+
+        Account sM1 = [Select Id, Name, (Select Id, Name from Contacts) From Account Where Id =:sID Limit 1];       
+
+        System.Debug('Account Id :'+sM1.Id);
+        System.Debug('Account-Contact Object'+sM1);
+        
+        return sM1;
+    } 
+}
